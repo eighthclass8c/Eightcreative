@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galeri - Kelas 8C</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #ffffff; 
+            --text-primary: #333333;
+            --nav-bg: rgba(255, 255, 255, 0.8); 
+            --nav-border: rgba(0, 0, 0, 0.1);
+            --nav-bottom-bg: linear-gradient(to top, #ffffff 75%, transparent 100%);
+            --transition-speed: 0.4s;
+            --box-bg: #f0f0f0;
+            --accent-green: #2ecc71;
+        }
+
+        body.dark-mode {
+            --bg-color: #0f0f0f;
+            --text-primary: #ffffff;
+            --nav-bg: rgba(0, 0, 0, 0.4); 
+            --nav-border: rgba(255, 255, 255, 0.1);
+            --nav-bottom-bg: linear-gradient(to top, #000000 75%, transparent 100%);
+            --box-bg: #1e1e1e;
+        }
+
+        body { 
+            margin: 0; padding: 0; font-family: sans-serif; 
+            background-color: var(--bg-color); color: var(--text-primary); 
+            min-height: 100vh; padding-bottom: 120px; padding-top: 70px;
+            transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* NAV ATAS */
+        nav { 
+            width: 100%; height: 80px; background-color: var(--nav-bg); 
+            border-bottom: 1px solid var(--nav-border); backdrop-filter: blur(10px); 
+            position: fixed; top: 0; left: 0; display: flex; align-items: center; 
+            justify-content: space-between; padding: 0 30px; box-sizing: border-box; z-index: 90;
+        }
+
+        .section-title { 
+            font-size: 24px; 
+            text-align: center; 
+            margin: 40px 0 10px; 
+            font-weight: bold; 
+            color: var(--accent-green);
+        }
+
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-top: 100px;
+            opacity: 0.5;
+        }
+        .empty-state i { font-size: 80px; margin-bottom: 20px; }
+
+        /* NAV BAWAH */
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; width: 100%; height: 85px;
+            background: var(--nav-bottom-bg); display: flex; justify-content: space-around; 
+            align-items: flex-end; z-index: 100; padding-bottom: 15px;
+        }
+        .nav-item { color: var(--text-primary); display: flex; flex-direction: column; align-items: center; text-decoration: none; opacity: 0.6; }
+        .nav-item.active { opacity: 1; color: var(--accent-green); }
+        .nav-item i { font-size: 20px; margin-bottom: 4px; }
+        .nav-item span { font-size: 11px; }
+
+    </style>
+</head>
+<body>
+
+    <nav id="top-nav">
+        <div style="display:flex; align-items:center; gap:12px;">
+            <img src="logo kelas.png" alt="Logo" style="width:40px; height:40px; border-radius:50%;">
+            <h1 style="font-size:22px; margin:0;">Eight.com Galeri</h1>
+        </div>
+    </nav>
+
+    <div class="section-title">Koleksi Foto</div>
+
+    <div class="empty-state">
+        <i class="fa-solid fa-images"></i>
+        <p>Belum ada foto yang diunggah.</p>
+    </div>
+
+    <div class="bottom-nav">
+        <a href="index.html" class="nav-item">
+            <i class="fa-solid fa-house"></i>
+            <span>Beranda</span>
+        </a>
+        <a href="#" class="nav-item active">
+            <i class="fa-solid fa-image"></i>
+            <span>Galeri</span>
+        </a>
+        <a href="#" class="nav-item">
+            <i class="fa-solid fa-music"></i>
+            <span>Lagu</span>
+        </a>
+    </div>
+
+    <script>
+        // Sinkronisasi Tema dengan Halaman Utama
+        if(localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('dark-mode');
+        }
+
+        // Script tambahan jika nanti ingin menambah foto secara otomatis
+        console.log("Halaman Galeri Siap.");
+    </script>
+</body>
+</html>
