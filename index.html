@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Website Kelas 8C - Satu Halaman</title>
-    <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         * {
@@ -788,8 +787,7 @@
     <span style="font-size:20px;font-weight:bold;display:block;margin-bottom:15px;">Pengaturan</span>
     <div class="menu-item"><span>Tema Gelap</span><label class="switch"><input type="checkbox" id="theme-toggle"><span class="slider"></span></label></div>
     <div class="menu-item"><span>Animasi UI</span><label class="switch"><input type="checkbox" id="anim-toggle"><span class="slider"></span></label></div>
-    <div class="menu-item"><span><i class="fa-solid fa-music"></i> Musik Latar Belakang</span><label class="switch"><input type="checkbox" id="bgm-toggle"><span class="slider"></span></label></div>
-    <div class="menu-item"><span><i class="fa-solid fa-shuffle"></i> Putar Otomatis (acak)</span><label class="switch"><input type="checkbox" id="auto-toggle"><span class="slider"></span></label></div>
+    <!-- Fitur musik latar dan acak telah dihapus -->
 </div>
 
 <script>
@@ -852,7 +850,6 @@
         {title:"masah ini,masa nanti dan masa masa selajutnya",artist:"nuca",coverImage:"nuca-masa-ini-nanti-dan-masa-indah-la-103e8.jpg",src:"d29ee36a6805faeb495f852bd09318ed~2.mp3"}
     ];
     let currentAudio=null, currentPlayingIndex=-1;
-    let isManualPlaying = false;
 
     function createMusicItem(song, idx){
         let div=document.createElement('div'); div.className='music-item'; div.dataset.index=idx;
@@ -869,19 +866,10 @@
     }
 
     function togglePlay(idx,src,btn){
-        if(bgmAudio && !bgmAudio.paused && bgmEnabled) {
-            bgmAudio.pause();
-            bgmPausedByManual = true;
-        }
         if(currentAudio && currentPlayingIndex===idx && !currentAudio.paused){
             currentAudio.pause();
             btn.innerHTML='<i class="fa-solid fa-play"></i>'; btn.classList.remove('playing');
             currentAudio=null; currentPlayingIndex=-1;
-            isManualPlaying = false;
-            if(bgmEnabled && bgmPausedByManual && (!bgmAudio || bgmAudio.paused)) {
-                bgmAudio.play().catch(e=>console.log("bgm resume gagal"));
-                bgmPausedByManual = false;
-            }
             return;
         }
         if(currentAudio){
@@ -889,22 +877,16 @@
             let prevBtn=document.querySelector(`.music-item[data-index='${currentPlayingIndex}'] .play-btn`);
             if(prevBtn){ prevBtn.innerHTML='<i class="fa-solid fa-play"></i>'; prevBtn.classList.remove('playing'); }
             currentAudio=null;
-            isManualPlaying = false;
         }
         let newAudio=new Audio(src); newAudio.loop=false;
-        newAudio.play().catch(e=>alert("Gagal memutar musik."));
+        newAudio.play().catch(e=>alert("Gagal memutar musik. Pastikan file audio tersedia."));
         newAudio.addEventListener('ended',()=>{
             if(currentPlayingIndex===idx){
                 btn.innerHTML='<i class="fa-solid fa-play"></i>'; btn.classList.remove('playing');
                 currentAudio=null; currentPlayingIndex=-1;
-                isManualPlaying = false;
-                if(bgmEnabled && bgmPausedByManual) {
-                    bgmAudio.play().catch(e=>console.log("bgm resume gagal"));
-                    bgmPausedByManual = false;
-                }
             }
         });
-        currentAudio=newAudio; currentPlayingIndex=idx; isManualPlaying=true;
+        currentAudio=newAudio; currentPlayingIndex=idx;
         btn.innerHTML='<i class="fa-solid fa-pause"></i>'; btn.classList.add('playing');
     }
 
@@ -912,114 +894,24 @@
     let musicContainer=document.getElementById('music-list-container');
     if(musicContainer) playlist.forEach((s,i)=>musicContainer.appendChild(createMusicItem(s,i)));
 
-    // ======================= MUSIK LATAR & OTOMATIS =======================
-    const bgmToggle = document.getElementById('bgm-toggle');
-    const autoToggle = document.getElementById('auto-toggle');
-    let bgmAudio = null;
-    let bgmEnabled = false;
-    let autoEnabled = false;
-    let bgmPausedByManual = false;
-    let currentBgmIndex = -1;
-
-    function playRandomBgm() {
-        if(!bgmEnabled) return;
-        if(playlist.length === 0) return;
-        let newIndex;
-        do {
-            newIndex = Math.floor(Math.random() * playlist.length);
-        } while(playlist.length > 1 && newIndex === currentBgmIndex);
-        currentBgmIndex = newIndex;
-        const song = playlist[currentBgmIndex];
-        if(bgmAudio) {
-            bgmAudio.pause();
-            bgmAudio = null;
-        }
-        bgmAudio = new Audio(song.src);
-        bgmAudio.volume = 0.5;
-        bgmAudio.loop = false;
-        bgmAudio.play().catch(e => console.log("BGM gagal diputar:", e));
-        bgmAudio.addEventListener('ended', () => {
-            if(bgmEnabled && autoEnabled) {
-                playRandomBgm();
-            } else if(bgmEnabled && !autoEnabled) {
-                bgmEnabled = false;
-                if(bgmToggle) bgmToggle.checked = false;
-                localStorage.setItem('bgmEnabled', 'false');
-                bgmAudio = null;
-            }
-        });
-    }
-
-    function stopBgm() {
-        if(bgmAudio) {
-            bgmAudio.pause();
-            bgmAudio = null;
-        }
-        currentBgmIndex = -1;
-    }
-
-    function setBgm(enable) {
-        bgmEnabled = enable;
-        localStorage.setItem('bgmEnabled', enable ? 'true' : 'false');
-        if(enable) {
-            if(!isManualPlaying) {
-                playRandomBgm();
-            } else {
-                bgmPausedByManual = true;
-            }
-        } else {
-            stopBgm();
-            bgmPausedByManual = false;
-        }
-    }
-
-    function setAuto(enable) {
-        autoEnabled = enable;
-        localStorage.setItem('autoEnabled', enable ? 'true' : 'false');
-    }
-
-    // Load status
-    const savedBgm = localStorage.getItem('bgmEnabled');
-    const savedAuto = localStorage.getItem('autoEnabled');
-    if(savedBgm === 'true') {
-        bgmEnabled = true;
-        if(bgmToggle) bgmToggle.checked = true;
-    } else {
-        bgmEnabled = false;
-        if(bgmToggle) bgmToggle.checked = false;
-    }
-    if(savedAuto === 'true') {
-        autoEnabled = true;
-        if(autoToggle) autoToggle.checked = true;
-    } else {
-        autoEnabled = false;
-        if(autoToggle) autoToggle.checked = false;
-    }
-
-    if(bgmToggle) bgmToggle.addEventListener('change', function() { setBgm(this.checked); });
-    if(autoToggle) autoToggle.addEventListener('change', function() { setAuto(this.checked); });
-
-    function startBgmAfterInteraction() {
-        if(bgmEnabled && !isManualPlaying && (!bgmAudio || bgmAudio.paused)) {
-            playRandomBgm();
-        }
-    }
-
-    // ======================= NAMA, DARK MODE, DLL =======================
+    // ======================= NAMA, DARK MODE, ANIMASI =======================
     const nameInput=document.getElementById('name-input'), confirmBtn=document.getElementById('confirm-btn'), welcomeMsg=document.getElementById('welcome-msg'), nameScreen=document.getElementById('name-screen'), errorMsgSpan=document.getElementById('error-msg');
     nameInput.addEventListener('input',function(){ if(this.value.trim()!==""){ confirmBtn.classList.add('active'); errorMsgSpan.style.visibility="hidden"; } else { confirmBtn.classList.remove('active'); errorMsgSpan.style.visibility="visible"; } });
-    confirmBtn.onclick=function(){ if(nameInput.value.trim()!==""){ localStorage.setItem('userName',nameInput.value.trim()); nameScreen.style.display='none'; let name=localStorage.getItem('userName'); welcomeMsg.innerText=`Hai ${name}, selamat datang`; setInterval(()=>{ let nameNow=localStorage.getItem('userName')||"Teman"; let texts=[`Hai ${nameNow}, selamat datang`,`${nameNow}, gimana kabarmu?`,`Hai ${nameNow}, lagi ngapain?`]; let idx=Math.floor(Math.random()*texts.length); welcomeMsg.style.opacity=0; setTimeout(()=>{ welcomeMsg.innerText=texts[idx]; welcomeMsg.style.opacity=1; },300); },4000); startBgmAfterInteraction(); } };
+    confirmBtn.onclick=function(){ if(nameInput.value.trim()!==""){ localStorage.setItem('userName',nameInput.value.trim()); nameScreen.style.display='none'; let name=localStorage.getItem('userName'); welcomeMsg.innerText=`Hai ${name}, selamat datang`; setInterval(()=>{ let nameNow=localStorage.getItem('userName')||"Teman"; let texts=[`Hai ${nameNow}, selamat datang`,`${nameNow}, gimana kabarmu?`,`Hai ${nameNow}, lagi ngapain?`]; let idx=Math.floor(Math.random()*texts.length); welcomeMsg.style.opacity=0; setTimeout(()=>{ welcomeMsg.innerText=texts[idx]; welcomeMsg.style.opacity=1; },300); },4000); } };
     window.onload=()=>{ setTimeout(()=>{ document.getElementById('loading-screen').style.display='none'; if(!localStorage.getItem('userName')) nameScreen.style.display='flex'; else{ let name=localStorage.getItem('userName'); welcomeMsg.innerText=`Hai ${name}, selamat datang`; setInterval(()=>{ let nameNow=localStorage.getItem('userName')||"Teman"; let texts=[`Hai ${nameNow}, selamat datang`,`${nameNow}, gimana kabarmu?`,`Hai ${nameNow}, lagi ngapain?`]; let idx=Math.floor(Math.random()*texts.length); welcomeMsg.style.opacity=0; setTimeout(()=>{ welcomeMsg.innerText=texts[idx]; welcomeMsg.style.opacity=1; },300); },4000); } },1500); };
     let lastScroll=0; window.addEventListener('scroll',()=>{ let topNav=document.getElementById('top-nav'); let st=window.pageYOffset; if(st>lastScroll&&st>80) topNav.classList.add('nav-hidden'); else topNav.classList.remove('nav-hidden'); lastScroll=st; });
     let slides=document.querySelectorAll('#slideshow img'), cur=0; if(slides.length) setInterval(()=>{ slides[cur].classList.remove('active'); cur=(cur+1)%slides.length; slides[cur].classList.add('active'); },3000);
     const themeToggle=document.getElementById('theme-toggle'), body=document.body; if(themeToggle) themeToggle.onchange=function(){ if(this.checked) body.classList.add('dark-mode'); else body.classList.remove('dark-mode'); localStorage.setItem('theme',this.checked?'dark':'light'); }; if(localStorage.getItem('theme')==='dark'){ body.classList.add('dark-mode'); if(themeToggle) themeToggle.checked=true; }
     const animToggle=document.getElementById('anim-toggle'); function setAnimations(enabled){ if(enabled){ body.classList.remove('no-transition'); localStorage.setItem('anim','on'); } else { body.classList.add('no-transition'); localStorage.setItem('anim','off'); } } if(animToggle) animToggle.onchange=function(){ setAnimations(this.checked); }; if(localStorage.getItem('anim')==='off'){ setAnimations(false); if(animToggle) animToggle.checked=false; } else { setAnimations(true); if(animToggle) animToggle.checked=true; }
+    // SETTINGS PANEL
     const overlay=document.getElementById('settings-overlay'), panel=document.getElementById('settings-panel'), openSettings=document.getElementById('open-settings'), closeHandle=document.getElementById('close-handle');
     openSettings.onclick=e=>{ e.stopPropagation(); overlay.classList.add('open'); panel.classList.add('open'); };
     overlay.onclick=()=>{ overlay.classList.remove('open'); panel.classList.remove('open'); };
     closeHandle.onclick=()=>{ overlay.classList.remove('open'); panel.classList.remove('open'); };
     panel.addEventListener('click',e=>e.stopPropagation());
+    // DRAG GALERI
     document.querySelectorAll('.galeri-wrapper').forEach(w=>{ let isDown=false, startX, scrollLeft; w.addEventListener('mousedown',e=>{ isDown=true; w.style.cursor='grabbing'; startX=e.pageX-w.offsetLeft; scrollLeft=w.scrollLeft; }); w.addEventListener('mouseleave',()=>{ isDown=false; w.style.cursor='grab'; }); w.addEventListener('mouseup',()=>{ isDown=false; w.style.cursor='grab'; }); w.addEventListener('mousemove',e=>{ if(!isDown) return; e.preventDefault(); let x=e.pageX-w.offsetLeft; let walk=(x-startX)*1.5; w.scrollLeft=scrollLeft-walk; }); });
+    // NAVIGASI SCROLL (Satu halaman)
     const navItems = document.querySelectorAll('.nav-item');
     function setActiveNav(sectionId) { navItems.forEach(btn => { if(btn.getAttribute('data-section') === sectionId) btn.classList.add('active'); else btn.classList.remove('active'); }); }
     function scrollToSection(sectionId) { const section = document.getElementById(sectionId); if(section) { section.scrollIntoView({ behavior: 'smooth', block: 'start' }); setActiveNav(sectionId); } }
@@ -1029,11 +921,6 @@
     const sectionObserver = new IntersectionObserver((entries) => { entries.forEach(entry => { if(entry.isIntersecting) setActiveNav(entry.target.id); }); }, observerOptions);
     sections.forEach(id => { const el = document.getElementById(id); if(el) sectionObserver.observe(el); });
     setActiveNav('section-home');
-
-    // Registrasi Service Worker (untuk PWA)
-    if('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('service-worker.js').then(reg => console.log('Service Worker registered', reg)).catch(err => console.log('Service Worker registration failed', err));
-    }
 })();
 </script>
 </body>
