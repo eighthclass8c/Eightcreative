@@ -1,0 +1,22 @@
+{
+  "name": "Kelas 8C Official",
+  "short_name": "Kelas8C",
+  "description": "Website resmi kelas 8C dengan musik latar dan galeri",
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#2ecc71",
+  "background_color": "#ffffff",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "logo kelas.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "logo kelas.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
