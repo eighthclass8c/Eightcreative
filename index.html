@@ -1,11 +1,18 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
+  <link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2ecc71">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="EightC">
+<link rel="apple-touch-icon" href="icon-512.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Website Kelas 8C - Profil dengan Login</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
+        /* ========== SEMUA STYLE SAMA (tidak diubah, hanya posisi ikon profil diatur di HTML) ========== */
         * {
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
@@ -57,7 +64,6 @@
             padding-top: 70px;
             overflow-x: hidden;
         }
-        /* LOADING SCREEN */
         #loading-screen {
             position: fixed;
             top: 0;
@@ -126,7 +132,6 @@
         }
         #confirm-btn.active { cursor: pointer; opacity: 1; }
         #error-msg { color: #e74c3c; font-size: 12px; margin-top: 5px; visibility: hidden; }
-        /* NAV ATAS */
         nav {
             width: 100%;
             height: 70px;
@@ -247,9 +252,43 @@
         }
         .logo-clickable:hover .story-tooltip { opacity: 1; }
         .title-text { font-size: 22px; margin: 0; color: var(--nav-text); font-weight: bold; }
-        .nav-actions { display: flex; align-items: center; gap: 15px; }
-        .nav-actions div { cursor: pointer; font-size: 24px; color: var(--nav-icon); transition: color 0.2s; }
-        .nav-actions div:hover { color: var(--accent-green); }
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .nav-actions div {
+            cursor: pointer;
+            font-size: 24px;
+            color: var(--nav-icon);
+            transition: color 0.2s;
+        }
+        .nav-actions div:hover {
+            color: var(--accent-green);
+        }
+        /* Ikon profil di nav atas */
+        .profile-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            background-color: var(--box-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            cursor: pointer;
+            border: 2px solid var(--accent-green);
+        }
+        .profile-icon i {
+            font-size: 28px;
+            color: var(--nav-icon);
+        }
+        .profile-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
         /* BANNER SLIDESHOW */
         .banner-container {
             width: 100%;
@@ -577,7 +616,7 @@
             .dynamic-island .island-title { font-size: 12px; }
             .dynamic-island .island-artist { font-size: 9px; }
         }
-        /* BOTTOM NAVIGATION */
+        /* BOTTOM NAVIGATION (tanpa tombol Saya) */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -628,6 +667,9 @@
     <div class="nav-actions">
         <div id="searchIcon"><i class="fas fa-search"></i></div>
         <div id="open-report"><i class="fa-solid fa-circle-exclamation"></i></div>
+        <div id="profileIconContainer" class="profile-icon" style="cursor:pointer;">
+            <i class="fas fa-user-circle"></i>
+        </div>
     </div>
 </nav>
 <div class="search-results" id="searchResults"></div>
@@ -756,12 +798,13 @@
     </div>
 </div>
 
+<!-- BOTTOM NAVIGATION - TANPA TOMBOL "Saya" -->
 <div class="bottom-nav">
     <button class="nav-item" data-page="home"><i class="fas fa-home"></i><span>Beranda</span></button>
     <button class="nav-item" data-page="gallery"><i class="fas fa-image"></i><span>Galeri</span></button>
     <button class="nav-item" data-page="music"><i class="fas fa-music"></i><span>Lagu</span></button>
     <button class="nav-item" data-page="tools"><i class="fas fa-tools"></i><span>Alat</span></button>
-    <button class="nav-item" data-page="profile"><i class="fas fa-user"></i><span>Saya</span></button>
+    <button class="nav-item" data-page="pet" id="petNavBtn"><i class="fas fa-paw"></i><span>PET</span></button>
 </div>
 
 <div id="reportModal" class="report-overlay">
@@ -779,6 +822,7 @@
 </div>
 
 <script>
+  
 (function(){
     // ======================= DATA =======================
     const verifiedBadgeImageUrl = "centang.png";
@@ -993,10 +1037,79 @@
     function renderProfileForm(){ const userProfile=getProfile(currentUser); const avatarSrc=userProfile.avatar||"logo kelas.png"; const bannerSrc=userProfile.banner||"https://placehold.co/1200x511/2ecc71/white?text=Banner+8C"; const bioText=userProfile.bio||"Belum ada bio. Silakan tambahkan bio."; const isVerified=userProfile.verified===true; let verifiedBadgeHtml=''; if(isVerified){ verifiedBadgeHtml=`<span class="verified-badge"><img src="${verifiedBadgeImageUrl}" alt="Verified" onerror="this.onerror=null; this.parentElement.innerHTML='<i class=\'fa-solid fa-certificate\' style=\'color:#1da1f2; font-size:20px;\'></i>'"></span>`; } profileContainer.innerHTML=`<div class="profile-banner-wrapper"><img class="profile-banner" src="${bannerSrc}" alt="Banner Profil" onerror="this.src='https://placehold.co/1200x511/2ecc71/white?text=Banner'"><img class="profile-avatar-img" src="${avatarSrc}" alt="Foto Profil" onerror="this.src='logo kelas.png'"></div><div class="profile-user-info"><div class="profile-username">${escapeHtml(currentUser)}${verifiedBadgeHtml}</div><div class="profile-bio">${escapeHtml(bioText)}</div><button id="editProfileBtn" class="edit-profile-btn"><i class="fa-regular fa-pen-to-square"></i> Edit Profil</button><button id="getVerifiedBtn" class="verify-btn"><i class="fa-regular fa-circle-check"></i> Dapatkan centang biru</button></div><div class="settings-card"><h3><i class="fa-solid fa-sliders-h"></i> Pengaturan</h3><div class="menu-item-settings"><span>Tema Gelap</span><label class="switch"><input type="checkbox" id="theme-toggle-settings"><span class="slider"></span></label></div><div class="menu-item-settings"><span>Animasi UI</span><label class="switch"><input type="checkbox" id="anim-toggle-settings"><span class="slider"></span></label></div></div>`; initSettings(); document.getElementById('editProfileBtn').addEventListener('click',openEditModal); document.getElementById('getVerifiedBtn').addEventListener('click',openVerifyModal); }
     function initProfile(){ if(currentUser && profiles[currentUser]){ renderProfileForm(); }else{ renderLoginForm(); } }
     
+    // ======================= IKON PROFIL DI NAV ATAS =======================
+    const profileIconContainer = document.getElementById('profileIconContainer');
+    function updateNavProfileIcon() {
+        if (currentUser && profiles[currentUser] && profiles[currentUser].avatar) {
+            profileIconContainer.innerHTML = `<img src="${profiles[currentUser].avatar}" alt="Foto Profil" style="width:100%; height:100%; object-fit:cover;">`;
+        } else {
+            profileIconContainer.innerHTML = `<i class="fas fa-user-circle"></i>`;
+        }
+    }
+    // Override fungsi renderProfileForm dan initProfile untuk update ikon
+    const originalRenderProfileForm = renderProfileForm;
+    renderProfileForm = function() {
+        originalRenderProfileForm();
+        updateNavProfileIcon();
+    };
+    const originalInitProfile = initProfile;
+    initProfile = function() {
+        originalInitProfile();
+        updateNavProfileIcon();
+    };
+    const originalLogoutFromModal = logoutFromModal;
+    logoutFromModal = function() {
+        originalLogoutFromModal();
+        updateNavProfileIcon();
+    };
+    updateNavProfileIcon();
+    
+    // Klik ikon profil untuk buka tab Saya
+    profileIconContainer.addEventListener('click', () => {
+        setActivePage('profile');
+    });
+    
+    // ======================= TOMBOL PET =======================
+    const petNavBtn = document.getElementById('petNavBtn');
+    if (petNavBtn) {
+        petNavBtn.addEventListener('click', () => {
+            alert("Fitur PET akan segera hadir! 🐾");
+        });
+    }
+    
     // ======================= NAVIGASI TAB =======================
     const homePage=document.getElementById('home-content'), galleryPage=document.getElementById('gallery-content'), musicPage=document.getElementById('music-content'), toolsPage=document.getElementById('tools-content'), profilePage=document.getElementById('profile-content'), navBtns=document.querySelectorAll('.nav-item');
-    function setActivePage(pageId){ homePage.classList.add('hidden-page'); galleryPage.classList.add('hidden-page'); musicPage.classList.add('hidden-page'); toolsPage.classList.add('hidden-page'); profilePage.classList.add('hidden-page'); if(pageId==='home') homePage.classList.remove('hidden-page'); else if(pageId==='gallery') galleryPage.classList.remove('hidden-page'); else if(pageId==='music') musicPage.classList.remove('hidden-page'); else if(pageId==='tools') toolsPage.classList.remove('hidden-page'); else if(pageId==='profile'){ profilePage.classList.remove('hidden-page'); initProfile(); } navBtns.forEach(btn=>{ if(btn.getAttribute('data-page')===pageId) btn.classList.add('active'); else btn.classList.remove('active'); }); }
-    navBtns.forEach(btn=>{ btn.addEventListener('click',(e)=>{ e.preventDefault(); const page=btn.getAttribute('data-page'); if(page) setActivePage(page); }); }); setActivePage('home');
+    function setActivePage(pageId){ 
+        homePage.classList.add('hidden-page'); 
+        galleryPage.classList.add('hidden-page'); 
+        musicPage.classList.add('hidden-page'); 
+        toolsPage.classList.add('hidden-page'); 
+        profilePage.classList.add('hidden-page'); 
+        if(pageId==='home') homePage.classList.remove('hidden-page'); 
+        else if(pageId==='gallery') galleryPage.classList.remove('hidden-page'); 
+        else if(pageId==='music') musicPage.classList.remove('hidden-page'); 
+        else if(pageId==='tools') toolsPage.classList.remove('hidden-page'); 
+        else if(pageId==='profile'){ 
+            profilePage.classList.remove('hidden-page'); 
+            initProfile(); 
+        } 
+        navBtns.forEach(btn=>{ 
+            if(btn.getAttribute('data-page')===pageId) btn.classList.add('active'); 
+            else btn.classList.remove('active'); 
+        }); 
+    }
+    navBtns.forEach(btn=>{ 
+        btn.addEventListener('click',(e)=>{ 
+            e.preventDefault(); 
+            const page=btn.getAttribute('data-page'); 
+            if(page === 'pet') {
+                alert("Fitur PET akan segera hadir! 🐾");
+                return;
+            }
+            if(page) setActivePage(page); 
+        }); 
+    }); 
+    setActivePage('home');
     
     // ======================= MODAL LAPORAN =======================
     const reportModal=document.getElementById('reportModal'), openReportBtn=document.getElementById('open-report'), closeModalBtn=reportModal.querySelector('.close-modal');
@@ -1027,6 +1140,13 @@
     function openStory(){ currentStoryIndex=0; storyOverlay.classList.add('active'); loadStory(0); }
     storyLauncher.addEventListener('click',openStory); storyClose.addEventListener('click',closeStory); storyOverlay.addEventListener('click',(e)=>{ if(e.target===storyOverlay||e.target===storyVideo){ if(window.storyTimeout) clearTimeout(window.storyTimeout); loadStory(currentStoryIndex+1); } });
 })();
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js')
+    .then(reg => console.log('Service Worker terdaftar', reg))
+    .catch(err => console.log('Gagal daftar service worker', err));
+}
 </script>
 </body>
 </html>
