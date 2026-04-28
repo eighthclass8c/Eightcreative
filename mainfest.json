@@ -1,0 +1,17 @@
+{
+  "name": "EightC - Kelas 8C",
+  "short_name": "EightC",
+  "description": "Website kelas 8C dengan profil, galeri, musik, dan alat.",
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#2ecc71",
+  "background_color": "#ffffff",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
