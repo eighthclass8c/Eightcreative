@@ -1187,6 +1187,29 @@
 
 <script>
 (function(){
+  // ========== KONFIGURASI GOOGLE DRIVE DIRECT LINK ==========
+  // GANTI ID_VIDEO_1 dan ID_VIDEO_2 dengan ID file video Google Drive Anda
+  // Cara mendapat ID: buka video di drive -> klik kanan "Dapatkan link" -> ambil kode di antara /d/ dan /view
+  // Contoh: https://drive.google.com/file/d/1ABC123xyz456/view -> ID = 1ABC123xyz456
+  const GOOGLE_DRIVE_FILE_ID_1 = "https://drive.google.com/file/d/1-MbAdegGIpDjohXj-6tpPnMBmXx04-rx/view?usp=drivesdk";   // Ganti dengan ID video 1
+  const GOOGLE_DRIVE_FILE_ID_2 = "https://drive.google.com/file/d/1JLw5pR6N77-YY6EDjtW-omMPfQHY_U0S/view?usp=drivesdk";   // Ganti dengan ID video 2
+
+  // Format direct link yang stabil untuk streaming di elemen <video>
+  function getGoogleDriveDirectLink(fileId) {
+    return `https://drive.usercontent.google.com/download?id=${fileId}&export=download&authuser=0`;
+  }
+
+  // Daftar video film (gunakan link dari Google Drive jika ID tersedia, fallback ke lokal)
+  const filmVideoSources = {
+    1: GOOGLE_DRIVE_FILE_ID_1 !== "https://drive.google.com/file/d/1-MbAdegGIpDjohXj-6tpPnMBmXx04-rx/view?usp=drivesdk" 
+        ? getGoogleDriveDirectLink(GOOGLE_DRIVE_FILE_ID_1) 
+        : "Bangku yang Selalu Kosong_01_8C.mp4",  // fallback lokal
+    2: GOOGLE_DRIVE_FILE_ID_2 !== "https://drive.google.com/file/d/1JLw5pR6N77-YY6EDjtW-omMPfQHY_U0S/view?usp=drivesdk" 
+        ? getGoogleDriveDirectLink(GOOGLE_DRIVE_FILE_ID_2) 
+        : "Dendam Menjadi Sahabat_02_8C.mp4"
+  };
+
+  // ========== SISANYA TETAP SEPERTI KODE ASLI (tidak ada perubahan lain) ==========
   const translations = {
     indonesia: {
       update_title:"Daftar Pembaruan", update_feat1:"Wallpaper Custom", update_feat1_desc:"Kini Anda dapat mengubah latar belakang dengan Gambar atau video",
@@ -1558,7 +1581,7 @@
   const backBtn = document.getElementById('backToFilmBtn');
   
   function showFilmDetail(filmIndex) {
-    const videoSrc = filmIndex === 1 ? 'Bangku yang Selalu Kosong_01_8C.mp4' : 'Dendam Menjadi Sahabat_02_8C.mp4';
+    const videoSrc = filmVideoSources[filmIndex];
     const titleText = filmIndex === 1 ? 'Bangku yang Selalu Kosong' : 'Dendam Menjadi Sahabat';
     videoTitleSpan.innerText = titleText;
     setVideoSource(videoSrc);
